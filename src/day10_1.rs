@@ -12,6 +12,7 @@ fn main() {
     let lines = parse_input();
 
     let mut closers = HashMap::new();
+    let mut expected = vec![];
     closers.insert('[', ']');
     closers.insert('(', ')');
     closers.insert('<', '>');
@@ -20,56 +21,43 @@ fn main() {
 
     
     let mut scores = HashMap::new();
-    scores.insert(']', 2);
-    scores.insert(')', 1);
-    scores.insert('}', 3);
-    scores.insert('>', 4);
+    scores.insert(']', 57);
+    scores.insert(')', 3);
+    scores.insert('}', 1197);
+    scores.insert('>', 25137);
 
-    let mut score = vec![];
+    let mut score = 0;
 
 
     for line in lines{
-        let mut expected = vec![];
-        let mut corrupted = false;
+        //let mut corrupted = false;
         //let mut incopmplete = false;
-        //println!("{}", line);
         for c in line.chars(){
             match closers.get(&c){
-                Some(closer) => expected.push(closer.clone()),
+                Some(closer) => expected.push(closer),
                 None => {
                     match expected.pop(){
                         Some(closer) => {
-                            if c != closer{
-                                corrupted = true;
-                                //score += scores.get(&c).unwrap();
-                                //println!("Corrupted");
+                            if c != *closer{
+                                //corrupted = true;
+                                score += scores.get(&c).unwrap();
+                                println!("Expected {}, but found {} instead", closer, c);
                                 break;
-                            }
-                            else{
-                                //Just closing normally
                             }
                         }
                         None => {
-                            //Too many closers
+                            //incopmplete = true;
+                            break;
                         }
                     }
                 }
             }
         }
-        if !corrupted{
-            let mut score_local : u64 = 0;
-            expected.reverse();
-            println!("{}", expected.iter().collect::<String>());
-            for e in &expected{
-                score_local *= 5;
-                score_local += scores.get(&e).unwrap();
-            }
-            score.push(score_local);
-        }
+
     }
     
-    score.sort();
-    println!("{}", score[(score.len()-1) / 2])
+
+    println!("{}", score)
 }
 
 fn parse_input() ->  Vec::<String> {
